@@ -65,6 +65,7 @@ type CommittingAction interface {
 	Receive(dht *DHT, msg *Message) (response interface{}, err error)
 	CheckValidationRequest(def *EntryDef) (err error)
 	EntryType() string
+	// returns a GobEntry containing the action's entry in a serialized format
 	Entry() Entry
 	SetHeader(header *Header)
 	GetHeader() (header *Header)
@@ -194,6 +195,9 @@ func (h *Holochain) GetValidationResponse(a ValidatingAction, hash Hash) (resp V
 		// so that sys validation can confirm this agent entry in the chain
 		req := PackagingReq{PkgReqChain: int64(PkgReqChainOptFull), PkgReqEntryTypes: []string{AgentEntryType}}
 		resp.Package, err = MakePackage(h, req)
+	case MigrateEntryType:
+		// if migrate entry there no extra info to return in the package so do nothing
+		// TODO: later this might not be true, could return whole chain?
 	default:
 		// app defined entry types
 		var def *EntryDef
@@ -231,6 +235,9 @@ func MakeActionFromMessage(msg *Message) (a Action, err error) {
 	case APP_MESSAGE:
 		a = &ActionSend{}
 		t = reflect.TypeOf(AppMsg{})
+	case MIGRATE_REQUEST:
+		a = &ActionMigrate{}
+		t = reflect.TypeOf(HoldReq{})
 	case PUT_REQUEST:
 		a = &ActionPut{}
 		t = reflect.TypeOf(HoldReq{})

@@ -7,6 +7,25 @@ import (
 	"testing"
 )
 
+func TestDelName(t *testing.T) {
+	Convey("delete action should have the right name", t, func() {
+		// https://github.com/holochain/holochain-proto/issues/715
+		// a := NewDelAction(DelEntry{Hash: ""})
+		a := ActionDel{entry: DelEntry{Hash: ""}}
+		So(a.Name(), ShouldEqual, "del")
+	})
+}
+
+func TestAPIFnDelName(t *testing.T) {
+	Convey("delete action function should have the right name", t, func() {
+		// https://github.com/holochain/holochain-proto/issues/715
+		// a := NewDelAction(DelEntry{Hash: ""})
+		a := ActionDel{entry: DelEntry{Hash: ""}}
+		fn := &APIFnDel{action: a}
+		So(fn.Name(), ShouldEqual, "del")
+	})
+}
+
 func TestActionDelete(t *testing.T) {
 	nodesCount := 3
 	mt := setupMultiNodeTesting(nodesCount)
@@ -78,6 +97,7 @@ func TestSysDel(t *testing.T) {
 	d, _, h := PrepareTestChain("test")
 	defer CleanupTestChain(h, d)
 	var err error
+
 	Convey("deleting should fail for all sys entry types except delete", t, func() {
 		a := NewDelAction(DelEntry{})
 		_, err = h.ValidateAction(a, DNAEntryType, nil, []peer.ID{h.nodeID})

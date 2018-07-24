@@ -43,6 +43,8 @@ type ReceiverFn func(h *Holochain, m *Message) (response interface{}, err error)
 
 type MsgType int8
 
+// @TODO don't have order dependant constants
+// https://github.com/holochain/holochain-proto/issues/713
 const (
 	// common messages
 
@@ -81,6 +83,11 @@ const (
 	// Kademlia messages
 
 	FIND_NODE_REQUEST
+
+	// Migrate DHT and validation messages
+
+	MIGRATE_REQUEST
+	VALIDATE_MIGRATE_REQUEST
 )
 
 func (msgType MsgType) String() string {
@@ -100,7 +107,9 @@ func (msgType MsgType) String() string {
 		"VALIDATE_MOD_REQUEST",
 		"APP_MESSAGE",
 		"LISTADD_REQUEST",
-		"FIND_NODE_REQUEST"}[msgType]
+		"FIND_NODE_REQUEST",
+		"MIGRATE_REQUEST",
+		"VALIDATE_MIGRATE_REQUEST"}[msgType]
 }
 
 var ErrBlockedListed = errors.New("node blockedlisted")
